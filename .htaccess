@@ -1,6 +1,9 @@
 # База
 Options -Indexes
 ServerSignature Off
+ServerTokens Prod
+TraceEnable Off
+php_flag expose_php Off
 
 # безопасность заголовков https://securityheaders.com/
 <IfModule mod_headers.c>
