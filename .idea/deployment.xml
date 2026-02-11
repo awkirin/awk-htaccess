@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" autoUpload="On explicit save action" serverName="awkirin" remoteFilesAllowedToDisappearOnAutoupload="false" autoUploadExternalChanges="true">
+    <serverData>
+      <paths name="awkirin">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/" local="$PROJECT_DIR$" web="/" />
+          </mappings>
+          <excludedPaths>
+            <excludedPath path="/.cache" />
+            <excludedPath path="/.config" />
+            <excludedPath path="/.filemgr-tmp" />
+            <excludedPath path="/.local" />
+            <excludedPath path="/.pki" />
+            <excludedPath path="/.ssh" />
+            <excludedPath path="/.subversion" />
+            <excludedPath path="/.wp-cli" />
+            <excludedPath path="/backups" />
+            <excludedPath path="/bin" />
+            <excludedPath path="/bin-tmp" />
+            <excludedPath path="/logs" />
+            <excludedPath path="/phar" />
+            <excludedPath path="/php-bin" />
+            <excludedPath path="/php-bin-php83-ioncube" />
+            <excludedPath path="/php-bin-regru-php82" />
+            <excludedPath path="/php-bin-regru-php83" />
+            <excludedPath path="/projects" />
+            <excludedPath path="/scripts" />
+            <excludedPath path="/tmp" />
+            <excludedPath path="/www" />
+            <excludedPath path="/.bash_history" />
+            <excludedPath path="/.bash_profile" />
+            <excludedPath path="/.bashrc" />
+            <excludedPath path="/.fmsettings" />
+            <excludedPath path="/.profile" />
+            <excludedPath path="/mail.log" />
+            <excludedPath path="/tests" />
+          </excludedPaths>
+        </serverdata>
+      </paths>
+    </serverData>
+    <option name="myAutoUpload" value="ON_EXPLICIT_SAVE" />
+  </component>
+</project>

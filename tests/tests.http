@@ -1,0 +1,170 @@
+### Проверка заголовков безопасности
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+### Проверка скрытых файлов (начинаются с точки) - должен вернуть 404
+GET https://awkirin.ru/.htaccess
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка скрытых файлов (начинаются с подчеркивания) - должен вернуть 404
+GET https://awkirin.ru/_config.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка опасных расширений - txt файлы - должен вернуть 404
+GET https://awkirin.ru/readme.txt
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка опасных расширений - backup файлы - должен вернуть 404
+GET https://awkirin.ru/wp-config.php.backup
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка опасных расширений - sql файлы - должен вернуть 404
+GET https://awkirin.ru/database.sql
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка опасных расширений - log файлы - должен вернуть 404
+GET https://awkirin.ru/error.log
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка опасных расширений - ini файлы - должен вернуть 404
+GET https://awkirin.ru/php.ini
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка опасных расширений - yml файлы - должен вернуть 404
+GET https://awkirin.ru/config.yml
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка запрещенных файлов - composer.json - должен вернуть 404
+GET https://awkirin.ru/composer.json
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка запрещенных файлов - package.json - должен вернуть 404
+GET https://awkirin.ru/package.json
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка запрещенных файлов - LICENSE - должен вернуть 404
+GET https://awkirin.ru/LICENSE
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка запрещенных файлов - wp-config.php - должен вернуть 404
+GET https://awkirin.ru/wp-config.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка запрещенных файлов - xmlrpc.php - должен вернуть 404
+GET https://awkirin.ru/xmlrpc.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка PHP в wp-includes - должен вернуть 404
+GET https://awkirin.ru/wp-includes/wp-db.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка PHP в uploads - должен вернуть 404
+GET https://awkirin.ru/uploads/2024/01/malicious.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка PHP в cache - должен вернуть 404
+GET https://awkirin.ru/cache/index.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка PHP в themes - должен вернуть 404
+GET https://awkirin.ru/wp-content/themes/twentytwentythree/functions.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка PHP в plugins - должен вернуть 404
+GET https://awkirin.ru/wp-content/plugins/akismet/akismet.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка PHP в vendor - должен вернуть 404
+GET https://awkirin.ru/vendor/autoload.php
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка кэширования статики - должен быть Cache-Control
+GET https://awkirin.ru/wp-content/themes/twentytwentythree/style.css
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### Проверка кэширования изображений - должен быть Cache-Control
+GET https://awkirin.ru/wp-content/uploads/2024/01/test-image.jpg
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### ТЕСТЫ НА БЛОКИРОВКУ БОТОВ ###
+
+### Пустой User-Agent - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent:
+
+### Дефис вместо User-Agent - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: -
+
+### Блокировка SemrushBot - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; SemrushBot/7~bl; +http://www.semrush.com/bot.html)
+
+### Блокировка Bytespider - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (Linux; Android 5.0) AppleWebKit/537.36 (KHTML, like Gecko) Mobile Safari/537.36 (compatible; Bytespider; https://zhanzhang.toutiao.com/)
+
+### Блокировка PetalBot - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; PetalBot; +https://aspiegel.com/petalbot)
+
+### Блокировка Baidu - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; Baiduspider/2.0; +http://www.baidu.com/search/spider.html)
+
+### Блокировка DataForSEO - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; DataForSeoBot/1.0; +https://dataforseo.com/dataforseo-bot)
+
+### Блокировка Barkrowler - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; Barkrowler/0.9; +https://babbar.tech/crawler)
+
+### Блокировка WP Bot - должен быть заблокирован
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; WPBot/1.0; +http://wpbot.org)
+
+### Блокировка IP 20.62.114.0 (симулируем заголовком) - должен быть заблокирован
+GET https://awkirin.ru/
+X-Forwarded-For: 20.62.114.10
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36
+
+### ЛЕГИТИМНЫЕ БОТЫ (ДОЛЖНЫ ПРОПУСКАТЬСЯ) ###
+
+### Googlebot - должен пропускаться
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)
+
+### Yandex Bot - должен пропускаться
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; YandexBot/3.0; +http://yandex.com/bots)
+
+### Bingbot - должен пропускаться
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)
+
+### Telegram Bot - должен пропускаться
+GET https://awkirin.ru/
+User-Agent: TelegramBot (like TwitterBot)
+
+### НОРМАЛЬНЫЕ ПОЛЬЗОВАТЕЛИ - должны пропускаться ###
+
+### Chrome
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36
+
+### Firefox
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0
+
+### Safari
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15
+
+### Mobile iPhone
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1
+
+### Android
+GET https://awkirin.ru/
+User-Agent: Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="28d6f942-997e-4dc1-8a4a-f11d11850c90" name="awkirin">
+        <fileTransfer rootFolder="/var/www/u1686238/data/" accessType="SFTP" host="awkirin" port="22" sshConfigId="f1b876c1-ad69-4394-819a-4ae105a92f5b" sshConfig="u1686238@awkirin:22 agent" authAgent="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" isUseRsync="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
