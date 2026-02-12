@@ -4,6 +4,10 @@ RewriteEngine On
 Options -Indexes -MultiViews +FollowSymLinks
 #Options +SymLinksIfOwnerMatch
 #RewriteBase /
+
+# применять ко всем сайтам
+RewriteOptions InheritDownBefore
+
 <IfModule mod_alias.c>
     # все что начинается с "."
     RedirectMatch 404 ^.*/\.[^/]*|^\.[^/]*
@@ -192,13 +196,13 @@ Options -Indexes -MultiViews +FollowSymLinks
     RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
     RewriteRule .* - [R=405,L]
 
-    # Редирект на HTTPS
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
-    # Редирект без www
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+#    # Редирект на HTTPS
+#    RewriteCond %{HTTPS} off
+#    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+#
+#    # Редирект без www
+#    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+#    RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
 
 #    # Защита от хотлинкинга
 #    RewriteCond %{HTTP_REFERER} !^$
@@ -210,9 +214,9 @@ Options -Indexes -MultiViews +FollowSymLinks
 #    RewriteCond %{REQUEST_URI} !(.*)/$
 #    RewriteRule ^(.*)$ /$1/ [L,R=301]
 
-    # Редирект index.php/html на корень
-    RewriteCond %{THE_REQUEST} /index\.(php|html?) [NC]
-    RewriteRule ^(.*)index\.(php|html?)$ /$1 [L,R=301,NC]
+#    # Редирект index.php/html на корень
+#    RewriteCond %{THE_REQUEST} /index\.(php|html?) [NC]
+#    RewriteRule ^(.*)index\.(php|html?)$ /$1 [L,R=301,NC]
 </IfModule>
 <IfModule mod_setenvif.c>
     # пустой user agent
