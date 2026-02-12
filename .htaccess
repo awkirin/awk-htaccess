@@ -1,17 +1,14 @@
+# применять ко всем сайтам
+RewriteOptions InheritDownBefore
 AddDefaultCharset UTF-8
 ServerSignature Off
 RewriteEngine On
 Options -Indexes -MultiViews +FollowSymLinks
+#DirectorySlash Off
 #Options +SymLinksIfOwnerMatch
 #RewriteBase /
 
-# применять ко всем сайтам
-RewriteOptions InheritDownBefore
-
 <IfModule mod_alias.c>
-    # все что начинается с "."
-    RedirectMatch 404 ^.*/\.[^/]*|^\.[^/]*
-
     # по расширению
     RedirectMatch 404 .*\.(cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$
 
@@ -39,9 +36,6 @@ RewriteOptions InheritDownBefore
         Header set Cache-Control "max-age=31536000, public, immutable"
         Header set Access-Control-Allow-Origin "*"
     </FilesMatch>
-    <FilesMatch "\.(html|htm)$">
-        Header set Cache-Control "private, max-age=600, must-revalidate"
-    </FilesMatch>
 </IfModule>
 <IfModule mod_mime.c>
     AddType application/atom+xml                atom
@@ -51,7 +45,7 @@ RewriteOptions InheritDownBefore
     AddType application/geo+json                geojson
     AddType application/rdf+xml                 rdf
     AddType application/xml                     xml
-    AddType text/javascript                     js mjs
+    AddType application/javascript              js mjs
     AddType application/manifest+json           webmanifest
     AddType application/x-web-app-manifest+json webapp
     AddType text/cache-manifest                 appcache
@@ -169,7 +163,7 @@ RewriteOptions InheritDownBefore
     ExpiresByType application/atom+xml                "access plus 1 hour"
     ExpiresByType application/rdf+xml                 "access plus 1 hour"
     ExpiresByType application/rss+xml                 "access plus 1 hour"
-    ExpiresByType text/html                           "access plus 30 minutes"
+    ExpiresByType text/html                           "access"
     ExpiresByType text/markdown                       "access"
     ExpiresByType text/calendar                       "access"
     ExpiresByType text/x-cross-domain-policy          "access plus 1 week"
@@ -192,44 +186,404 @@ RewriteOptions InheritDownBefore
     ExpiresByType application/font-woff2              "access plus 1 year"
 </IfModule>
 <IfModule mod_rewrite.c>
+RewriteEngine On
+    # скрыть начинающиеся с точки
+    RewriteRule ^\.well-known/ - [L,NC]
+    RewriteRule (^|/)\. - [R=404,L]
+
+    # скрытие от ботов
+    RewriteCond %{HTTP_USER_AGENT} ^$ [OR]
+    RewriteCond %{HTTP_USER_AGENT} ^-?$ [OR]
+    RewriteCond %{HTTP_USER_AGENT} "offline explorer|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent" [NC]
+    RewriteRule .* - [R=404,L]
+
     # Блокировка TRACE/TRACK методов
     RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
     RewriteRule .* - [R=405,L]
 
-#    # Редирект на HTTPS
-#    RewriteCond %{HTTPS} off
-#    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-#
-#    # Редирект без www
-#    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-#    RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
+    # Редирект на HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteCond %{SERVER_PORT} !^443$
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+    # Редирект без www
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^(.*)$ https://%1/$1 [L,R=301]
 
 #    # Защита от хотлинкинга
 #    RewriteCond %{HTTP_REFERER} !^$
 #    RewriteCond %{HTTP_REFERER} !^https?://(www\.)?%{HTTP_HOST} [NC]
 #    RewriteRule \.(jpg|jpeg|png|gif|webp|svg)$ - [F,NC,L]
 
-#    # Добавление завершающего слэша
-#    RewriteCond %{REQUEST_FILENAME} !-f
-#    RewriteCond %{REQUEST_URI} !(.*)/$
-#    RewriteRule ^(.*)$ /$1/ [L,R=301]
+#    # Добавление слеша к существующим директориям
+#    RewriteCond %{REQUEST_URI} /+[^\.]+$
+#    RewriteRule ^(.+[^/])$ %{REQUEST_URI}/ [R=301,L]
 
-#    # Редирект index.php/html на корень
-#    RewriteCond %{THE_REQUEST} /index\.(php|html?) [NC]
-#    RewriteRule ^(.*)index\.(php|html?)$ /$1 [L,R=301,NC]
+    # Редирект index.php/html на корень
+    RewriteCond %{THE_REQUEST} /index\.(php|html?) [NC]
+    RewriteRule ^(.*)index\.(php|html?)$ /$1 [L,R=301,NC]
 </IfModule>
-<IfModule mod_setenvif.c>
-    # пустой user agent
-    SetEnvIf User-Agent "^(|-?)$" bad_bot
 
-    # плохие боты
-    SetEnvIfNoCase User-Agent "(offline explorer|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent)" bad_bot
-    # хорошие боты
-    # yandex | gptbot | amazonbot | twitterbot | telegrambot | bingbot
-</IfModule>
-<IfModule mod_authz_core.c>
-    <RequireAll>
-        Require all granted
-        Require not env bad_bot
-    </RequireAll>
-</IfModule>
+# v2 скрытие от ботов
+#<IfModule mod_setenvif.c>
+#    # пустой user agent
+#    SetEnvIf User-Agent "^(|-?)$" bad_bot
+#
+#    # плохие боты
+#    SetEnvIfNoCase User-Agent "(offline explorer|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent)" bad_bot
+#    # хорошие боты
+#    # yandex | gptbot | amazonbot | twitterbot | telegrambot | bingbot
+#</IfModule>
+#<IfModule mod_authz_core.c>
+#    <RequireAll>
+#        Require all granted
+#        Require not env bad_bot
+#    </RequireAll>
+#</IfModule>
+
+
+
+
+
+
+
+
+
+
+#budo old
+#AddDefaultCharset utf-8
+## Options All -Indexes
+#Options -Indexes -MultiViews
+#ServerSignature Off
+#
+#<IfModule mod_headers.c>
+#    Header always unset Server
+#    Header always unset X-Powered-By
+#    Header merge Cache-Control "no-transform"
+#    Header always unset X-Pingback
+#    Header always unset Link
+#    Header always set X-Content-Type-Options "nosniff"
+#
+#    # Защита от кликджекинга (для старых браузеров)
+#    Header always set X-Frame-Options "SAMEORIGIN" "expr=%{CONTENT_TYPE} =~ m#text/html#i"
+#
+#    # Политика реферера - передает домен при кросс-доменных запросах
+#    Header always set Referrer-Policy "strict-origin-when-cross-origin" "expr=%{CONTENT_TYPE} =~ m#text\/(css|html|javascript)|application\/pdf|xml#i"
+#
+#    # Политика разрешений - оставляем только необходимое
+#    Header always set Permissions-Policy "usb=(), magnetometer=(), accelerometer=(), gyroscope=()"
+##     Header always set Permissions-Policy "accelerometer=(),autoplay=(),camera=(),display-capture=(),document-domain=(),encrypted-media=(),fullscreen=(),geolocation=(),gyroscope=(),magnetometer=(),microphone=(),midi=(),payment=(),picture-in-picture=(),publickey-credentials-get=(),screen-wake-lock=(),sync-xhr=(self),usb=(),web-share=(),xr-spatial-tracking=()" "expr=%{CONTENT_TYPE} =~ m#text\/(html|javascript)|application\/pdf|xml#i"
+#
+#    # Защита от XSS (для старых браузеров)
+#    Header always set X-XSS-Protection "1; mode=block"
+#
+#    #     Header always set Strict-Transport-Security "max-age=16070400; includeSubDomains" "expr=%{HTTPS} == 'on'"
+#    #     # (1) Enable your site for HSTS preload inclusion.
+#    #     # Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload" "expr=%{HTTPS} == 'on'"
+#
+#    # Предзагрузка шрифтов и критических ресурсов
+##    Header append Link "<https://fonts.googleapis.com>; rel=preconnect; crossorigin"
+##    Header append Link "<https://fonts.gstatic.com>; rel=preconnect; crossorigin"
+#
+#    # Кеширование
+#    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|js|css|swf|webp|woff2?|ttf|eot|svg)$">
+#        Header set Cache-Control "max-age=31536000, public"
+#    </FilesMatch>
+#
+##    # Разное время кэширования для разных типов
+##    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|webp|avif|jxl|svg)$">
+##        Header set Cache-Control "max-age=31536000, public, immutable"
+##    </FilesMatch>
+##
+##    <FilesMatch "\.(js|mjs)$">
+##        Header set Cache-Control "max-age=31536000, public, immutable"
+##    </FilesMatch>
+##
+##    <FilesMatch "\.(css)$">
+##        Header set Cache-Control "max-age=31536000, public, immutable"
+##    </FilesMatch>
+##
+##    <FilesMatch "\.(woff2?|ttf|eot|otf)$">
+##        Header set Cache-Control "max-age=31536000, public, immutable"
+##    </FilesMatch>
+##
+##    # HTML не кэшируем или кэшируем ненадолго
+##    <FilesMatch "\.(html|htm)$">
+##        Header set Cache-Control "max-age=0, private, no-store, no-cache, must-revalidate"
+##    </FilesMatch>
+#
+#</IfModule>
+#<IfModule mod_alias.c>
+#    # блокировка всего что начинается с "." или "_"
+#    RedirectMatch 404 /[._][^/]*$
+#    # v2 <FilesMatch "^[._]">
+#    # Order Allow,Deny
+#    # Deny from all
+#    # </FilesMatch>
+#    # v3 <IfModule mod_rewrite.c>
+#    # RewriteEngine On
+#    # RewriteCond %{REQUEST_URI} "!(^|/)\.well-known/([^./]+./?)+$" [NC]
+#    # RewriteCond %{SCRIPT_FILENAME} -d [OR]
+#    # RewriteCond %{SCRIPT_FILENAME} -f
+#    # RewriteRule "(^|/)\." - [F]
+#    # </IfModule>
+#
+#    # блокировка по расширению
+#    RedirectMatch 404 .*\.(back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf|config\.js|blade\.php)$
+#    # v2 <FilesMatch "\.(back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf|config\.js|blade\.php)$">
+#    # Order Allow,Deny
+#    # Deny from all
+#    # </FilesMatch>
+#
+#    # блокировка конкретных файлов
+#    RedirectMatch 404 ^/(composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php)$
+#    #v2 <FilesMatch "^(composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php)$">
+#    # Order Allow,Deny
+#    # Deny from all
+#    # </FilesMatch>
+#
+#    # Запрещаем PHP во всех папках wp-content (кроме плагинов и тем)
+#    RedirectMatch 404 ^/(wp-includes|cache|uploads|backup|upgrade|tmp|vendor|includes|inc|themes|plugins|mu-plugins|app)/.*\.php$
+#    # v2 RedirectMatch 404 /wp-includes/.*\.php$
+#    # RedirectMatch 404 /cache/.*\.php$
+#    # RedirectMatch 404 /uploads/.*\.php$
+#    # RedirectMatch 404 /backup/.*\.php$
+#    # RedirectMatch 404 /upgrade/.*\.php$
+#    # RedirectMatch 404 /tmp/.*\.php$
+#    # RedirectMatch 404 /vendor/.*\.php$
+#    # RedirectMatch 404 /includes/.*\.php$
+#    # RedirectMatch 404 /inc/.*\.php$
+#    # RedirectMatch 404 /themes/.*\.php$
+#    # RedirectMatch 404 /plugins/.*\.php$
+#    # RedirectMatch 404 /mu-plugins/.*\.php$
+#    # RedirectMatch 404 /app/.*\.php$
+#    #v3 <IfModule mod_authz_core.c>
+#    # <FilesMatch "(^#.*#|\.(bak|conf|dist|fla|in[ci]|log|orig|psd|sh|sql|sw[op])|~)$">
+#    # Require all denied
+#    # </FilesMatch>
+#</IfModule>
+#<IfModule mod_setenvif.c>
+#    Order Allow,Deny
+#    Allow from all
+#
+#    # 1. ПУСТЫЕ USER-AGENT
+#    SetEnvIf User-Agent "^$" bad_bot
+#    SetEnvIf User-Agent "^-?$" bad_bot
+#
+#    # !2. ФЕЙКОВЫЕ Chrome (версии 90- и 130+) не работает
+#    #SetEnvIfNoCase User-Agent "chrome/([1-8][0-9]\.|90\.|1[3-9][0-9]\.|[2-9][0-9][0-9]\.)" bad_bot
+#
+#    # 3. УРЕЗАННЫЕ USER-AGENT
+#    #SetEnvIfNoCase User-Agent "^mozilla/5\.0.*applewebkit/537\.36$" bad_bot
+#
+#    # 4. ВРЕДОНОСНЫЕ/АГРЕССИВНЫЕ БОТЫ
+#    SetEnvIfNoCase User-Agent "trendictionbot" bad_bot
+#    SetEnvIfNoCase User-Agent "geedo" bad_bot
+#    SetEnvIfNoCase User-Agent "seranking" bad_bot
+#    SetEnvIfNoCase User-Agent "timpibot" bad_bot
+#    SetEnvIfNoCase User-Agent "semrushbot" bad_bot
+#    SetEnvIfNoCase User-Agent "keys-so-bot" bad_bot
+#    SetEnvIfNoCase User-Agent "wpbot" bad_bot
+#    SetEnvIfNoCase User-Agent "dataforseo" bad_bot
+#    SetEnvIfNoCase User-Agent "barkrowler" bad_bot
+#    SetEnvIfNoCase User-Agent "seekport" bad_bot
+#    SetEnvIfNoCase User-Agent "backlinks" bad_bot
+#    SetEnvIfNoCase User-Agent "gigaexplorator" bad_bot
+#    SetEnvIfNoCase User-Agent "terracotta" bad_bot
+#
+#    # 5. ЛЕГИТИМНЫЕ БОТЫ
+#    SetEnvIfNoCase User-Agent "bytespider" bad_bot
+#    SetEnvIfNoCase User-Agent "petalbot" bad_bot
+#    SetEnvIfNoCase User-Agent "baidu" bad_bot
+#    SetEnvIfNoCase User-Agent "oai-searchbot" bad_bot
+#    SetEnvIfNoCase User-Agent "meta-externalagent" bad_bot
+#    #SetEnvIfNoCase User-Agent "gptbot" bad_bot
+#    #SetEnvIfNoCase User-Agent "amazonbot" bad_bot
+#    #SetEnvIfNoCase User-Agent "twitterbot" bad_bot
+#    #SetEnvIfNoCase User-Agent "telegrambot" bad_bot
+#    #SetEnvIfNoCase User-Agent "bingbot" bad_bot
+#
+#    Deny from env=bad_bot
+#</IfModule>
+#<IfModule mod_rewrite.c>
+#    RewriteEngine On
+#    Options +FollowSymlinks
+#    # Options +SymLinksIfOwnerMatch
+#    # RewriteBase /
+#
+#    # Блокировка TRACE/TRACK методов
+#    RewriteCond %{REQUEST_METHOD} ^(TRACE|TRACK) [NC]
+#    RewriteRule .* - [R=405,L]
+#
+#    # Защита от инъекций через X-Forwarded-For
+#    RewriteCond %{HTTP:X-Forwarded-For} !^$ [NC]
+#    RewriteCond %{HTTP:X-Forwarded-For} ^\d+\.\d+\.\d+\.\d+$ [NC]
+#    RewriteRule .* - [F,L]
+#
+##    # force delete www
+##    RewriteCond %{HTTPS} =on
+##    RewriteRule ^ - [E=PROTO:https]
+##    RewriteCond %{HTTPS} !=on
+##    RewriteRule ^ - [E=PROTO:http]
+##    # RewriteCond %{HTTPS} !=on
+##    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+##    RewriteRule ^ %{ENV:PROTO}://%1%{REQUEST_URI} [R=301,L]
+#
+##    # force https
+##    RewriteCond %{HTTPS} !=on
+##    # (1)
+##    # RewriteCond %{REQUEST_URI} !^/\.well-known/acme-challenge/
+##    # RewriteCond %{REQUEST_URI} !^/\.well-known/cpanel-dcv/[\w-]+$
+##    # RewriteCond %{REQUEST_URI} !^/\.well-known/pki-validation/[A-F0-9]{32}\.txt(?:\ Comodo\ DCV)?$
+##    RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+#</IfModule>
+#<IfModule mod_mime.c>
+#    AddType application/atom+xml                        atom
+#    AddType application/json                            json map topojson
+#    AddType application/ld+json                         jsonld
+#    AddType application/rss+xml                         rss
+#    AddType application/geo+json                        geojson
+#    AddType application/rdf+xml                         rdf
+#    AddType application/xml                             xml
+#    AddType text/javascript                             js mjs
+#    AddType application/manifest+json                   webmanifest
+#    AddType application/x-web-app-manifest+json         webapp
+#    AddType text/cache-manifest                         appcache
+#    AddType audio/mp4                                   f4a f4b m4a
+#    AddType audio/ogg                                   oga ogg opus
+#    AddType image/avif                                  avif avifs
+#    AddType image/bmp                                   bmp
+#    AddType image/jxl                                   jxl
+#    AddType image/svg+xml                               svg svgz
+#    AddType image/webp                                  webp
+#    AddType video/mp4                                   f4v f4p m4v mp4
+#    AddType video/ogg                                   ogv
+#    AddType video/webm                                  webm
+#    AddType video/x-flv                                 flv
+#    AddType image/x-icon                                cur ico
+#    AddType application/wasm                            wasm
+#    AddType font/woff                                   woff
+#    AddType font/woff2                                  woff2
+#    AddType application/vnd.ms-fontobject               eot
+#    AddType font/ttf                                    ttf
+#    AddType font/collection                             ttc
+#    AddType font/otf                                    otf
+#    AddType application/octet-stream                    safariextz
+#    AddType application/x-bb-appworld                   bbaw
+#    AddType application/x-chrome-extension              crx
+#    AddType application/x-opera-extension               oex
+#    AddType application/x-xpinstall                     xpi
+#    AddType text/calendar                               ics
+#    AddType text/markdown                               markdown md
+#    AddType text/vcard                                  vcard vcf
+#    AddType text/vnd.rim.location.xloc                  xloc
+#    AddType text/vtt                                    vtt
+#    AddType text/x-component                            htc
+#    AddCharset utf-8 \
+#    .appcache \
+#    .bbaw \
+#    .css \
+#    .htc \
+#    .ics \
+#    .js \
+#    .json \
+#    .manifest \
+#    .map \
+#    .markdown \
+#    .md \
+#    .mjs \
+#    .topojson \
+#    .vtt \
+#    .vcard \
+#    .vcf \
+#    .webmanifest \
+#    .xloc
+#</IfModule>
+#<IfModule mod_deflate.c>
+#    <IfModule mod_setenvif.c>
+#        <IfModule mod_headers.c>
+#            SetEnvIfNoCase ^(Accept-EncodXng|X-cept-Encoding|X{15}|~{15}|-{15})$ ^((gzip|deflate)\s*,?\s*)+|[X~-]{4,13}$ HAVE_Accept-Encoding
+#            RequestHeader append Accept-Encoding "gzip,deflate" env=HAVE_Accept-Encoding
+#        </IfModule>
+#    </IfModule>
+#    <IfModule mod_filter.c>
+#        AddOutputFilterByType DEFLATE \
+#        "application/atom+xml" \
+#        "application/javascript" \
+#        "application/json" \
+#        "application/ld+json" \
+#        "application/manifest+json" \
+#        "application/rdf+xml" \
+#        "application/rss+xml" \
+#        "application/schema+json" \
+#        "application/geo+json" \
+#        "application/vnd.ms-fontobject" \
+#        "application/wasm" \
+#        "application/x-font-ttf" \
+#        "application/x-javascript" \
+#        "application/x-web-app-manifest+json" \
+#        "application/xhtml+xml" \
+#        "application/xml" \
+#        "font/eot" \
+#        "font/opentype" \
+#        "font/otf" \
+#        "font/ttf" \
+#        "image/bmp" \
+#        "image/svg+xml" \
+#        "image/vnd.microsoft.icon" \
+#        "image/x-icon" \
+#        "text/cache-manifest" \
+#        "text/calendar" \
+#        "text/css" \
+#        "text/html" \
+#        "text/javascript" \
+#        "text/plain" \
+#        "text/markdown" \
+#        "text/vcard" \
+#        "text/vnd.rim.location.xloc" \
+#        "text/vtt" \
+#        "text/x-component" \
+#        "text/x-cross-domain-policy" \
+#        "text/xml"
+#    </IfModule>
+#    <IfModule mod_mime.c>
+#        AddEncoding gzip              svgz
+#    </IfModule>
+#</IfModule>
+#<IfModule mod_expires.c>
+#    ExpiresActive on
+#    ExpiresDefault                                      "access plus 1 year"
+#    ExpiresByType image/vnd.microsoft.icon              "access plus 1 week"
+#    ExpiresByType image/x-icon                          "access plus 1 week"
+#    ExpiresByType application/manifest+json             "access plus 1 week"
+#    ExpiresByType application/x-web-app-manifest+json   "access"
+#    ExpiresByType text/cache-manifest                   "access"
+#    ExpiresByType application/atom+xml                  "access plus 1 hour"
+#    ExpiresByType application/rdf+xml                   "access plus 1 hour"
+#    ExpiresByType application/rss+xml                   "access plus 1 hour"
+#    ExpiresByType text/html                             "access"
+#    ExpiresByType text/markdown                         "access"
+#    ExpiresByType text/calendar                         "access"
+#    ExpiresByType text/x-cross-domain-policy            "access plus 1 week"
+#    ExpiresByType application/json                      "access"
+#    ExpiresByType application/ld+json                   "access"
+#    ExpiresByType application/schema+json               "access"
+#    ExpiresByType application/geo+json                  "access"
+#    ExpiresByType application/xml                       "access"
+#    ExpiresByType text/xml                              "access"
+#
+#    # Generic: WebAssembly
+#    # ExpiresByType application/wasm                    "access plus 1 year" # default
+#
+#    # Generic: Assets
+#    # ExpiresByType application/javascript              "access plus 1 year" # default
+#    # ExpiresByType application/x-javascript            "access plus 1 year" # default
+#    # ExpiresByType text/javascript                     "access plus 1 year" # default
+#    # ExpiresByType text/css                            "access plus 1 year" # default
+#
+#    # Generic: Medias
+#    # ExpiresByType audio/*                             "access plus 1 year" # default
+#    # ExpiresByType image/*                             "access plus 1 year" # default
+#    # ExpiresByType video/*                             "access plus 1 year" # default
+#    # ExpiresByType font/*                              "access plus 1 year" # default
+#</IfModule>
