@@ -7,6 +7,7 @@ RewriteOptions InheritDownBefore
     Header always unset Link
     Header always unset X-Powered-By
     Header always unset X-Pingback
+    Header always unset Link
     Header always set X-Content-Type-Options "nosniff"
 </IfModule>
 <IfModule mod_rewrite.c>
@@ -38,6 +39,6 @@ RewriteOptions InheritDownBefore
     RewriteRule ^.*/(uploads|cache|plugins|mu-plugins)/.*\.php$ - [R=404,L,NC]
 
     # скрываем для user agents
-    RewriteCond %{HTTP_USER_AGENT} "offline|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent" [NC]
+    RewriteCond %{HTTP_USER_AGENT} "wpscan|offline|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent" [NC]
     RewriteRule .* - [R=404,L]
 </IfModule>
