@@ -162,35 +162,33 @@ RewriteOptions InheritDownBefore
     ExpiresByType application/font-woff               "access plus 1 year"
     ExpiresByType application/font-woff2              "access plus 1 year"
 </IfModule>
-<IfModule mod_alias.c>
-#    RedirectMatch 404 .*\.(cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$
-#    RedirectMatch 404 ^.*(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php|blade\.php)$
-#    RedirectMatch 404 ^.*/(upgrade|backup|backups|vendor|node_modules|logs|tmp|temp|bin)/.*
-#    RedirectMatch 404 ^.*/(cache|wp-includes|uploads|vendor|inc|themes|plugins|app)/.*\.php$
-</IfModule>
 <IfModule mod_rewrite.c>
-    # Блокировки
-
-    ## все что начинается с точки
+    # разрешаем .well-known
     RewriteRule ^\.well-known/ - [L,NC]
-    RewriteRule (^|/)\. - [R=500,L]
 
-    ## Пустой или слишком короткий User-Agent (менее 10 символов)
-    RewriteCond %{HTTP_USER_AGENT} "^(|-?|.{0,9})$" [NC,OR]
+    # скрываем все что начинается с точки
+    RewriteRule (^|/)\. - [R=404,L]
 
-    ## user agents
+    # скрываем с слишком коротким User-Agent (менее 10 символов)
+    RewriteCond %{HTTP_USER_AGENT} "^.{0,9}$"
+    RewriteRule .* - [R=404,L]
+
+    # скрываем по имени директории
+    RewriteRule ^.*/(upgrade|backup|backups|vendor|node_modules|logs|tmp|temp|bin)/.* - [R=404,L,NC]
+
+    # скрываем по имени файла
+    RewriteRule ^.*/(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php)$ - [R=404,L,NC]
+
+    # скрываем шаблоны blade
+    RewriteRule (^|/).*\.blade\.php$ - [R=404,L,NC]
+
+    # скрываем по расширению файла
+    RewriteRule \.(cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$ - [R=404,L,NC]
+
+    # скрываем по имени директории с php
+    RewriteRule ^.*/(uploads|cache|plugins|mu-plugins)/.*\.php$ - [R=404,L,NC]
+
+    # скрываем для user agents
     RewriteCond %{HTTP_USER_AGENT} "offline|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent" [NC]
-    RewriteRule .* - [R=500,L]
-
-    ## по имени директории
-    RewriteRule ^.*/(upgrade|backup|backups|vendor|node_modules|logs|tmp|temp|bin)/.* - [R=500,L]
-
-    ## по расширению файла
-    RewriteRule \.(cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$ - [R=500,L]
-
-    ## по имени файла
-    RewriteRule ^.*(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php|blade\.php)$ - [R=500,L]
-
-    ## по папкам
-    RewriteRule ^.*/(uploads|cache)/.*\.php$ - [R=500,L]
+    RewriteRule .* - [R=404,L]
 </IfModule>
