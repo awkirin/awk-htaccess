@@ -26,13 +26,13 @@ RewriteOptions InheritDownBefore
     RewriteRule ^.*/(upgrade|backup|backups|vendor|node_modules|logs|tmp|temp|bin)/.* - [R=404,L,NC]
 
     # скрываем по имени файла
-    RewriteRule ^.*/(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php)$ - [R=404,L,NC]
+    RewriteRule ^(.*/)?(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php|readme\.html|readme\.txt|changelog\.txt|wp-cron\.php)$ - [R=404,L,NC]
 
     # скрываем шаблоны blade
     RewriteRule (^|/).*\.blade\.php$ - [R=404,L,NC]
 
     # скрываем по расширению файла
-    RewriteRule \.(cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$ - [R=404,L,NC]
+    RewriteRule \.(pot|cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$ - [R=404,L,NC]
 
     # скрываем по имени директории с php
     RewriteRule ^.*/(uploads|cache|plugins|mu-plugins)/.*\.php$ - [R=404,L,NC]
