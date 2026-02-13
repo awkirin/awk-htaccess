@@ -13,10 +13,10 @@ RewriteOptions InheritDownBefore
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
-    # разрешаем .well-known
+    # разрешаем .well-known для получения сертификата
     RewriteRule ^\.well-known/ - [L,NC]
 
-    # скрываем все что начинается с точки
+    # скрываем все что начинается с точки (site.ru/.env site.ru/page/.git/history/)
     RewriteRule (^|/)\. - [R=404,L]
 
     # скрываем с пустым user agent
