@@ -27,7 +27,7 @@ RewriteOptions InheritDownBefore
     RewriteRule ^.*/(upgrade|backup|backups|vendor|node_modules|logs|tmp|temp|bin)/.* - [R=404,L,NC]
 
     # скрываем по имени файла
-    RewriteRule ^(.*/)?(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|LICENSE|wp-config-sample\.php|wp-config\.php|xmlrpc\.php|readme\.html|readme\.txt|changelog\.txt|wp-cron\.php)$ - [R=404,L,NC]
+    RewriteRule ^(.*/)?(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|license|license\.txt|wp-config-sample\.php|wp-config\.php|xmlrpc\.php|readme\.html|readme\.txt|changelog\.txt|wp-cron\.php)$ - [R=404,L,NC]
 
     # скрываем шаблоны blade
     RewriteRule (^|/).*\.blade\.php$ - [R=404,L,NC]
