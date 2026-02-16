@@ -24,7 +24,7 @@ RewriteOptions InheritDownBefore
     RewriteRule .* - [F,L]
 
     # скрываем по имени директории
-    RewriteRule ^.*/(upgrade|backup|backups|vendor|node_modules|logs|tmp|temp|bin)/.* - [R=404,L,NC]
+    RewriteRule ^.*/(upgrade|backup|backups|node_modules|logs|tmp|temp|bin)/.* - [R=404,L,NC]
 
     # скрываем по имени файла
     RewriteRule ^(.*/)?(config\.js|composer\.json|package\.json|package-lock\.json|phpunit\.xml|phpcs\.xml|phpmd\.xml|Dockerfile|Makefile|license|license\.txt|wp-config-sample\.php|wp-config\.php|xmlrpc\.php|readme\.html|readme\.txt|changelog\.txt|wp-cron\.php)$ - [R=404,L,NC]
@@ -36,7 +36,7 @@ RewriteOptions InheritDownBefore
     RewriteRule \.(pot|cache|pem|key|crt|csr|p12|pfx|~|temp|tmp|save|orig|back|bak|backup|old|swp|swo|swn|dump|db|sqlite|sqlite3|ini|phps|fla|psd|log|sh|lock|md|sql|tpl|twig|bat|ps|example|yaml|yml|config|conf)$ - [R=404,L,NC]
 
     # скрываем по имени директории с php
-    RewriteRule ^.*/(uploads|cache|plugins|mu-plugins)/.*\.php$ - [R=404,L,NC]
+    RewriteRule ^.*/(vendor|uploads|cache|plugins|mu-plugins)/.*\.php$ - [R=404,L,NC]
 
     # скрываем для user agents
     RewriteCond %{HTTP_USER_AGENT} "offline|ahrefs|backlinks|barkrowler|blex|curl|dataforseo|dotbot|geedo|gigaexplorator|httrack|keys|mj12|seekport|semrush|seranking|teleport|terracotta|timpibot|trendictionbot|webcopier|webzip|wget|wpbot|bytespider|petalbot|baidu|oai-searchbot|meta-externalagent|wpscan" [NC]
